@@ -12,9 +12,9 @@ export default function Projects() {
                     КАТАЛОГ
                 </p>
 
-                <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-6">
-                    Проекты и кейсы
-                </h1>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">
+  Проекты и кейсы
+</h1>
 
                 <p className="text-xl text-neutral-600 leading-relaxed">
                     Полный каталог проектов: от стратегий монетизации до системных запусков в разных нишах.
