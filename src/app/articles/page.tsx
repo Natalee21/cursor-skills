@@ -2,6 +2,23 @@ import Link from "next/link";
 import { articles } from "@/lib/articles";
 
 export default function ArticlesPage() {
+    const extraArticles = [
+        {
+            slug: "custdev",
+            type: "Исследования продукта",
+            title: "Почему важно делать CustDev перед созданием любого продукта",
+            desc: "Большая обзорная статья о том, как CustDev помогает находить реальные потребности аудитории и строить продукты без догадок."
+        },
+        {
+            slug: "brand-strategy",
+            type: "Стратегия бренда",
+            title: "Личный бренд и лицо бренда: в чём разница и почему это важно понять",
+            desc: "Разбор основы бренда, различий между лицом бренда и личным брендом, а также этапов продвижения на примерах Byredo и Glossier."
+        }
+    ];
+
+    const allArticles = [...extraArticles, ...articles];
+
     return (
         <div className="max-w-5xl mx-auto px-6 py-12 md:py-24 animate-in fade-in duration-700">
             <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-16">
@@ -9,7 +26,7 @@ export default function ArticlesPage() {
             </h1>
 
             <div className="space-y-6">
-                {articles.map((item) => (
+            {allArticles.map((item) => (
                     <Link
                         key={item.slug}
                         href={`/articles/${item.slug}`}

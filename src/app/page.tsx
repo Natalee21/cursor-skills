@@ -66,9 +66,9 @@ export default function HomePage() {
 
             <div className="relative w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] md:w-[400px] md:h-[400px] rounded-full overflow-hidden border border-neutral-200 bg-white shadow-[0_32px_80px_rgba(0,0,0,0.18)]">
               <img
-                src="/natali.jpg"
+                src="/avatar.png"
                 alt="Натали Борисова"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-[50%_28%] scale-[1.05]"
               />
             </div>
           </div>
