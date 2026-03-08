@@ -1,11 +1,15 @@
 "use client";
 
-// app/contact/page.tsx
-
 import { useState } from "react";
 
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: "", niche: "", message: "" });
+  const [form, setForm] = useState({
+    name: "",
+    niche: "",
+    contact: "",
+    message: "",
+  });
+
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   const handleChange = (
@@ -15,7 +19,7 @@ export default function ContactPage() {
   };
 
   const handleSubmit = async () => {
-    if (!form.name || !form.niche || !form.message) return;
+    if (!form.name || !form.niche || !form.contact || !form.message) return;
     setStatus("loading");
 
     try {
@@ -27,7 +31,12 @@ export default function ContactPage() {
 
       if (res.ok) {
         setStatus("success");
-        setForm({ name: "", niche: "", message: "" });
+        setForm({
+          name: "",
+          niche: "",
+          contact: "",
+          message: "",
+        });
       } else {
         setStatus("error");
       }
@@ -38,10 +47,7 @@ export default function ContactPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-24 grid lg:grid-cols-2 gap-12 md:gap-16 lg:gap-20 items-start">
-
-      {/* Левая колонка */}
       <div>
-
         <div className="flex items-center gap-3 mb-6">
           <div className="w-14 h-14 rounded-full overflow-hidden border border-neutral-200 bg-white shadow-sm">
             <img
@@ -66,9 +72,7 @@ export default function ContactPage() {
           воронку, расскажите мне о своем проекте.
         </p>
 
-        {/* Контакты */}
         <div className="mt-10 md:mt-12 space-y-8 md:space-y-10 max-w-sm">
-
           <div className="flex flex-col gap-3">
             <p className="text-sm font-semibold text-neutral-500 uppercase tracking-[0.12em]">
               Связаться в Telegram
@@ -98,13 +102,10 @@ export default function ContactPage() {
               <span className="text-neutral-400 text-xl">→</span>
             </a>
           </div>
-
         </div>
       </div>
 
-      {/* Правая колонка — форма */}
       <div className="lg:mt-10 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3.5rem] border border-neutral-200 bg-white shadow-[0_22px_70px_rgba(0,0,0,0.08)] p-6 sm:p-8 md:p-12 h-fit relative overflow-hidden">
-
         <div className="absolute top-0 right-0 w-80 h-80 bg-blue-50/60 blur-[90px] -translate-y-24 translate-x-24" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-orange-50/60 blur-[90px] translate-y-24 -translate-x-24" />
 
@@ -128,7 +129,6 @@ export default function ContactPage() {
           </div>
         ) : (
           <div className="relative space-y-5 md:space-y-6">
-
             <div>
               <label className="block text-sm font-extrabold mb-2 uppercase tracking-[0.12em] text-neutral-500">
                 Ваше имя
@@ -159,6 +159,20 @@ export default function ContactPage() {
 
             <div>
               <label className="block text-sm font-extrabold mb-2 uppercase tracking-[0.12em] text-neutral-500">
+                Как с вами связаться
+              </label>
+              <input
+                type="text"
+                name="contact"
+                value={form.contact}
+                onChange={handleChange}
+                placeholder="Telegram, email или телефон"
+                className="w-full bg-white border border-neutral-200 rounded-2xl p-4 focus:border-neutral-400 outline-none transition"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-extrabold mb-2 uppercase tracking-[0.12em] text-neutral-500">
                 Кратко опишите задачу
               </label>
               <textarea
@@ -180,15 +194,19 @@ export default function ContactPage() {
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={status === "loading" || !form.name || !form.niche || !form.message}
+              disabled={
+                status === "loading" ||
+                !form.name ||
+                !form.niche ||
+                !form.contact ||
+                !form.message
+              }
               className="w-full py-4 md:py-5 rounded-2xl bg-neutral-900 text-white font-extrabold text-base md:text-lg transition hover:bg-blue-600 hover:shadow-xl active:scale-95 shadow-lg shadow-neutral-200 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {status === "loading" ? "Отправляю…" : "Отправить сообщение"}
             </button>
-
           </div>
         )}
-
       </div>
     </div>
   );

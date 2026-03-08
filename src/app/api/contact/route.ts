@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, niche, message } = body;
+    const { name, niche, contact, message } = body;
 
-    if (!name || !niche || !message) {
+    if (!name || !niche || !contact || !message) {
       return NextResponse.json(
         { error: "Заполните все поля" },
         { status: 400 }
@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         name,
         niche,
+        contact,
         message,
       }),
       cache: "no-store",
