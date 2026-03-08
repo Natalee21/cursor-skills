@@ -46,7 +46,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-24 grid lg:grid-cols-2 gap-12 md:gap-16 lg:gap-20 items-start">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-20 grid lg:grid-cols-2 gap-12 md:gap-14 lg:gap-16 items-start">
       <div>
         <div className="flex items-center gap-3 mb-6">
           <div className="w-14 h-14 rounded-full overflow-hidden border border-neutral-200 bg-white shadow-sm">
@@ -105,7 +105,7 @@ export default function ContactPage() {
         </div>
       </div>
 
-      <div className="lg:mt-10 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3.5rem] border border-neutral-200 bg-white shadow-[0_22px_70px_rgba(0,0,0,0.08)] p-6 sm:p-8 md:p-12 h-fit relative overflow-hidden">
+      <div className="lg:mt-8 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] border border-neutral-200 bg-white shadow-[0_22px_70px_rgba(0,0,0,0.08)] p-6 sm:p-8 md:p-10 h-fit relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-blue-50/60 blur-[90px] -translate-y-24 translate-x-24" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-orange-50/60 blur-[90px] translate-y-24 -translate-x-24" />
 
@@ -128,7 +128,7 @@ export default function ContactPage() {
             </button>
           </div>
         ) : (
-          <div className="relative space-y-5 md:space-y-6">
+          <div className="relative space-y-4 md:space-y-5">
             <div>
               <label className="block text-sm font-extrabold mb-2 uppercase tracking-[0.12em] text-neutral-500">
                 Ваше имя
@@ -176,18 +176,18 @@ export default function ContactPage() {
                 Кратко опишите задачу
               </label>
               <textarea
-                rows={6}
+                rows={4}
                 name="message"
                 value={form.message}
                 onChange={handleChange}
                 placeholder="Что сейчас не работает и какой результат хотите получить"
-                className="w-full bg-white border border-neutral-200 rounded-2xl p-4 focus:border-neutral-400 outline-none resize-none transition"
+                className="w-full bg-white border border-neutral-200 rounded-2xl p-4 focus:border-neutral-400 outline-none resize-none transition min-h-[140px]"
               />
             </div>
 
             {status === "error" && (
               <p className="text-sm text-red-500 text-center">
-                Что-то пошло не так — попробуйте ещё раз или напишите в Telegram.
+                Что-то пошло не так, попробуйте ещё раз или напишите в Telegram.
               </p>
             )}
 
