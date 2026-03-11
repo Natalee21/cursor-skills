@@ -2,30 +2,47 @@
 import Link from "next/link";
 import type { Project } from "@/lib/projects";
 
+type ProjectMetric = {
+    value: string;
+    label: string;
+};
+
+type ExtendedProject = Project & {
+    strategy?: string[];
+    metrics?: ProjectMetric[];
+};
+
 function Pill({ children }: { children: string }) {
     return (
-        <span className="px-3 py-1 rounded-full bg-white border border-neutral-200 text-xs font-semibold text-neutral-800">
+        <span className="rounded-full border border-neutral-200 bg-white px-3 py-1 text-xs font-semibold text-neutral-800">
             {children}
         </span>
+    );
+}
+
+function MetricPill({ value, label }: { value: string; label: string }) {
+    return (
+        <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-center">
+            <div className="text-2xl font-extrabold text-blue-600 md:text-3xl">
+                {value}
+            </div>
+            <div className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">
+                {label}
+            </div>
+        </div>
     );
 }
 
 function sanitizeText(input: string) {
     if (!input) return "";
 
-    return (
-        input
-            // Убираем конструкции вида: [oai_citation:...](sediment://...)
-            .replace(/\[oai_citation:[^\]]+\]\([^)]+\)/gi, "")
-            // Убираем одинокие [oai_citation:...]
-            .replace(/\[oai_citation:[^\]]+\]/gi, "")
-            // Убираем хвосты sediment://... если вдруг остались
-            .replace(/sediment:\/\/\S+/gi, "")
-            // Чистим двойные пробелы и лишние переносы
-            .replace(/[ \t]{2,}/g, " ")
-            .replace(/\n{3,}/g, "\n\n")
-            .trim()
-    );
+    return input
+        .replace(/\[oai_citation:[^\]]+\]\([^)]+\)/gi, "")
+        .replace(/\[oai_citation:[^\]]+\]/gi, "")
+        .replace(/sediment:\/\/\S+/gi, "")
+        .replace(/[ \t]{2,}/g, " ")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
 }
 
 function mapNicheToken(token: string) {
@@ -34,14 +51,15 @@ function mapNicheToken(token: string) {
     const dict: Record<string, string> = {
         Education: "Образование",
         Premium: "Премиум",
-        "B2B": "B2B",
+        B2B: "B2B",
         Sports: "Спорт",
         Psychology: "Психология",
         "Language Learning": "Языки",
-        "E-commerce": "E commerce",
-        "Ecommerce": "E commerce",
+        Ecommerce: "E commerce",
         Lifestyle: "Lifestyle",
         Beauty: "Beauty",
+        "Personal Branding": "Личный бренд",
+        "Content Strategy": "Контент-стратегия",
     };
 
     return dict[t] ?? t;
@@ -59,12 +77,11 @@ function mapTag(tag: string) {
         Conversion: "Конверсия",
         Sales: "Продажи",
         CRM: "CRM",
-        Scripts: "Скрипты",
-        "Messenger Sales": "Продажи в мессенджерах",
-        "WhatsApp Sales": "Продажи в WhatsApp",
-        "High Ticket": "Высокий чек",
-        Messaging: "Мессенджеры",
         EdTech: "EdTech",
+        Strategy: "Стратегия",
+        Growth: "Рост",
+        Content: "Контент",
+        "Organic Growth": "Органический рост",
     };
 
     return dict[t] ?? t;
@@ -79,7 +96,7 @@ function mapTool(tool: string) {
         Telephony: "Телефония",
         "Product Research": "Продуктовое исследование",
         Landing: "Лендинг",
-        "GetCourse": "GetCourse",
+        GetCourse: "GetCourse",
         PBX: "PBX",
         Telegram: "Telegram",
         Instagram: "Instagram",
@@ -89,12 +106,17 @@ function mapTool(tool: string) {
         Zoom: "Zoom",
         CRM: "CRM",
         SaleBot: "SaleBot",
+        "Content Series": "Контент-серии",
+        "Video Scripts": "Видео-сценарии",
+        "Story-based marketing": "Story based маркетинг",
     };
 
     return dict[t] ?? t;
 }
 
 export default function CaseLayout({ project }: { project: Project }) {
+    const extendedProject = project as ExtendedProject;
+
     const nicheParts = project.niche
         .split("/")
         .map((s) => s.trim())
@@ -115,55 +137,118 @@ export default function CaseLayout({ project }: { project: Project }) {
     const workDone = (project.workDone ?? []).map(sanitizeText);
     const insights = (project.insights ?? []).map(sanitizeText);
 
+    const role = project.role ? sanitizeText(project.role) : "";
+    const strategy = (extendedProject.strategy ?? []).map(sanitizeText);
+    const metrics = extendedProject.metrics ?? [];
+
     return (
-        <div className="max-w-6xl mx-auto px-6 pt-24 pb-24">
+        <div className="mx-auto max-w-6xl px-6 pb-24 pt-24">
             <div className="mb-10">
                 <Link
                     href="/projects"
-                    className="text-sm text-neutral-500 hover:text-neutral-900 transition-colors"
+                    className="text-sm text-neutral-500 transition-colors hover:text-neutral-900"
                 >
                     ← Вернуться ко всем проектам
                 </Link>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 mb-6">
-                {nicheLabel ? (
-                    <span className="px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold text-blue-700 uppercase tracking-[0.18em]">
+            <div className="mb-6 flex flex-wrap items-center gap-2">
+                {nicheLabel && (
+                    <span className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-blue-700">
                         {nicheLabel}
                     </span>
-                ) : null}
+                )}
 
                 {tags.map((t) => (
                     <Pill key={t}>{t}</Pill>
                 ))}
             </div>
 
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.05]">
+            <h1 className="text-4xl font-extrabold tracking-tight leading-[1.05] md:text-6xl">
                 {title}
             </h1>
 
-            <p className="mt-6 text-lg md:text-xl text-neutral-700 italic border-l-2 border-orange-400 pl-4 py-1 max-w-3xl">
+            <p className="mt-6 max-w-3xl border-l-2 border-orange-400 py-1 pl-4 text-lg italic text-neutral-700 md:text-xl">
                 {shortDesc}
             </p>
 
-            <section className="mt-14 grid md:grid-cols-2 gap-10">
+            {metrics.length > 0 && (
+                <section className="mt-14">
+                    <p className="mb-6 text-xs font-bold uppercase tracking-[0.22em] text-neutral-400">
+                        Ключевые метрики
+                    </p>
+
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                        {metrics.map((metric, idx) => (
+                            <MetricPill
+                                key={idx}
+                                value={metric.value}
+                                label={metric.label}
+                            />
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            <section className="mt-14 grid gap-10 md:grid-cols-2">
                 <div className="rounded-3xl border border-neutral-200 bg-white p-8 shadow-[0_18px_50px_rgba(0,0,0,0.06)]">
-                    <p className="text-xs uppercase tracking-[0.22em] text-neutral-400 font-bold">
+                    <p className="text-xs font-bold uppercase tracking-[0.22em] text-neutral-400">
                         Контекст
                     </p>
-                    <p className="mt-4 text-neutral-700 leading-relaxed">{context}</p>
+                    <p className="mt-4 leading-relaxed text-neutral-700">
+                        {context}
+                    </p>
                 </div>
 
                 <div className="rounded-3xl border border-neutral-200 bg-neutral-900 p-8 shadow-[0_18px_50px_rgba(0,0,0,0.12)]">
-                    <p className="text-xs uppercase tracking-[0.22em] text-neutral-400 font-bold">
+                    <p className="text-xs font-bold uppercase tracking-[0.22em] text-neutral-400">
                         Цель
                     </p>
-                    <p className="mt-4 text-white leading-relaxed">{goal}</p>
+                    <p className="mt-4 leading-relaxed text-white">{goal}</p>
                 </div>
             </section>
 
+            {role && (
+                <section className="mt-16">
+                    <div className="rounded-3xl border border-orange-200 bg-orange-50/50 p-8 shadow-[0_18px_50px_rgba(0,0,0,0.06)]">
+                        <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-600">
+                            Моя роль в проекте
+                        </p>
+                        <p className="mt-4 font-medium leading-relaxed text-neutral-800">
+                            {role}
+                        </p>
+                    </div>
+                </section>
+            )}
+
+            {strategy.length > 0 && (
+                <section className="mt-16">
+                    <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-neutral-900">
+                        Стратегия
+                    </p>
+
+                    <div className="mt-6 grid gap-6 md:grid-cols-2">
+                        {strategy.map((item, idx) => (
+                            <div
+                                key={idx}
+                                className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.05)]"
+                            >
+                                <div className="flex gap-4">
+                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-blue-100 text-xs font-extrabold text-blue-600">
+                                        {idx + 1}
+                                    </div>
+                                    <p className="leading-relaxed text-neutral-800">
+                                        {item}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
             <section className="mt-16">
-                <p className="text-sm font-extrabold tracking-[0.22em] text-neutral-900 uppercase">
+                <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-neutral-900">
                     Что сделано
                 </p>
 
@@ -171,37 +256,39 @@ export default function CaseLayout({ project }: { project: Project }) {
                     {workDone.map((item, idx) => (
                         <div
                             key={idx}
-                            className="rounded-3xl border border-neutral-200 bg-white p-7 md:p-8 shadow-[0_18px_50px_rgba(0,0,0,0.06)] flex gap-6"
+                            className="flex gap-6 rounded-3xl border border-neutral-200 bg-white p-7 shadow-[0_18px_50px_rgba(0,0,0,0.06)] md:p-8"
                         >
-                            <div className="shrink-0 w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-sm font-extrabold text-blue-700">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-blue-100 bg-blue-50 text-sm font-extrabold text-blue-700">
                                 {idx + 1}
                             </div>
 
-                            <p className="text-neutral-800 leading-relaxed">{item}</p>
+                            <p className="leading-relaxed text-neutral-800">
+                                {item}
+                            </p>
                         </div>
                     ))}
                 </div>
             </section>
 
             <section className="mt-16">
-                <div className="rounded-[2.5rem] border border-orange-100 bg-orange-50/60 p-10 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.06)]">
-                    <p className="text-xs uppercase tracking-[0.22em] font-extrabold text-orange-600">
+                <div className="rounded-[2.5rem] border border-orange-100 bg-orange-50/60 p-10 shadow-[0_20px_60px_rgba(0,0,0,0.06)] md:p-12">
+                    <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-orange-600">
                         Результат
                     </p>
 
-                    <h2 className="mt-5 text-xl md:text-2xl font-extrabold tracking-tight leading-snug text-neutral-900">
+                    <div className="mt-5 whitespace-pre-line text-xl font-extrabold leading-snug tracking-tight text-neutral-900 md:text-2xl">
                         {outcome}
-                    </h2>
+                    </div>
 
-                    <p className="mt-6 text-neutral-700 leading-relaxed max-w-4xl">
+                    <p className="mt-6 max-w-4xl leading-relaxed text-neutral-700">
                         {fullDesc}
                     </p>
                 </div>
             </section>
 
-            <section className="mt-16 grid md:grid-cols-2 gap-10">
+            <section className="mt-16 grid gap-10 md:grid-cols-2">
                 <div>
-                    <p className="text-xs uppercase tracking-[0.22em] text-neutral-400 font-bold mb-4">
+                    <p className="mb-4 text-xs font-bold uppercase tracking-[0.22em] text-neutral-400">
                         Инструменты
                     </p>
 
@@ -213,34 +300,38 @@ export default function CaseLayout({ project }: { project: Project }) {
                 </div>
 
                 <div>
-                    <p className="text-xs uppercase tracking-[0.22em] text-neutral-400 font-bold mb-4">
+                    <p className="mb-4 text-xs font-bold uppercase tracking-[0.22em] text-neutral-400">
                         Выводы
                     </p>
 
                     <div className="space-y-4">
                         {insights.map((insight, i) => (
                             <div key={i} className="flex gap-3">
-                                <span className="text-orange-500 font-extrabold">→</span>
-                                <p className="text-neutral-700 leading-relaxed">{insight}</p>
+                                <span className="font-extrabold text-orange-500">
+                                    →
+                                </span>
+                                <p className="leading-relaxed text-neutral-700">
+                                    {insight}
+                                </p>
                             </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            <section className="mt-20 rounded-3xl border border-neutral-200 bg-white p-10 md:p-14 text-center shadow-[0_22px_70px_rgba(0,0,0,0.08)]">
-                <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight text-neutral-900">
+            <section className="mt-20 rounded-3xl border border-neutral-200 bg-white p-10 text-center shadow-[0_22px_70px_rgba(0,0,0,0.08)] md:p-14">
+                <h3 className="text-2xl font-extrabold tracking-tight text-neutral-900 md:text-3xl">
                     Хотите похожий результат?
                 </h3>
 
-                <p className="mt-4 text-neutral-600 italic max-w-3xl mx-auto leading-relaxed">
+                <p className="mx-auto mt-4 max-w-3xl italic leading-relaxed text-neutral-600">
                     Вам нужна системность, которая превращает интуитивные решения в архитектуру роста и монетизации.
                 </p>
 
                 <div className="mt-8 flex justify-center">
                     <Link
                         href="/contact"
-                        className="px-10 py-4 rounded-2xl bg-blue-600 text-white font-extrabold text-base transition hover:bg-blue-700 shadow-xl shadow-blue-200 active:scale-95"
+                        className="rounded-2xl bg-blue-600 px-10 py-4 text-base font-extrabold text-white shadow-xl shadow-blue-200 transition hover:bg-blue-700 active:scale-95"
                     >
                         Написать мне →
                     </Link>
